@@ -22,10 +22,11 @@ const userSchema = new mongoose.Schema(
 
     social_id:
      { type: String, default: null }, 
-    resetOTP: 
-    { type: Number, default: null },
+     resetOTP: { type: String, default: null },
     otpExpiry:
-     { type: Date, default: null }
+     { type: Date, default: null },
+     isVerified:
+    { type: Boolean, default: false }, 
   },
   { timestamps: true }
 );

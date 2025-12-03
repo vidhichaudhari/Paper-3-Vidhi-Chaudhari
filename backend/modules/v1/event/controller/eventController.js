@@ -26,17 +26,58 @@ export const createEvent = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    const { category, location, minPrice, maxPrice, startDate, endDate, sort, page, limit, search } = req.query;
+
+    const filters = {};
+
+   
+    if (search) {
+      filters.title = { $regex: search, $options: "i" };
+    }
+
+    
+    if (category) filters.category = category;
+
+    if (location) filters.location = location;
+
+    
+    if (minPrice && maxPrice) {
+      filters.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+    }
+
+    if (startDate && endDate) {
+      filters.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
+
+    const perPage = Number(limit) || 10;
+    const currentPage = Number(page) || 1;
+    const skip = (currentPage - 1) * perPage;
+
+    let sortOption = {};
+    if (sort === "date") sortOption.date = 1;
+    if (sort === "price") sortOption.price = 1;
+    if (sort === "popularity") sortOption.popularity = -1;
+
+    const events = await Event.find(filters)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(perPage);
+
+    const total = await Event.countDocuments(filters);
 
     return res.status(200).json({
       success: true,
-      count: events.length,
+      total,
+      page: currentPage,
+      pages: Math.ceil(total / perPage),
       events,
     });
+
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getEventById = async (req, res) => {
   try {
