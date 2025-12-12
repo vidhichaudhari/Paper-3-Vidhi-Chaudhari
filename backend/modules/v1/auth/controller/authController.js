@@ -3,8 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../../../../utils/sendEmail.js";
 
-
-// ====================== SIGNUP ======================
 export const signup = async (req, res) => {
   try {
     const { name, email, password, mobile } = req.body;
@@ -12,18 +10,26 @@ export const signup = async (req, res) => {
     if (!name || !email || !password || !mobile)
       return res.status(400).json({ message: "All fields are required" });
 
+    const emailParts = email.split("@");
+    
+    if (emailParts.length !== 2 ||
+      emailParts[0].length === 0 ||
+      emailParts[1].length === 0 ||
+      !emailParts[1].includes(".")) {
+      return res.status(400).json({ message: "Invalid email" });
+    }
+
+
     const exists = await User.findOne({ $or: [{ email }, { mobile }] });
     if (exists)
       return res.status(400).json({ message: "Email or Mobile already registered" });
 
-    // Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate OTP & Hash
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOTP = await bcrypt.hash(otp, 10);
 
-    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
+    const otpExpiry = Date.now() + 10 * 60 * 1000;
 
     const user = await User.create({
       name,
@@ -37,7 +43,7 @@ export const signup = async (req, res) => {
 
     await sendEmail(
       email,
-      "Verify Your Email",
+      "Event Booking - Verify your Email",
       `<h3>Your OTP is <b>${otp}</b>. It expires in 10 minutes.</h3>`
     );
 
@@ -53,7 +59,6 @@ export const signup = async (req, res) => {
 };
 
 
-// ====================== VERIFY EMAIL ======================
 export const verifyEmail = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -64,11 +69,9 @@ export const verifyEmail = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "Invalid Email" });
 
-    // check expiry
     if (user.otpExpiry < Date.now())
       return res.status(400).json({ message: "Invalid or expired OTP" });
 
-    // compare hashed otp
     const isMatch = await bcrypt.compare(otp, user.resetOTP);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid or expired OTP" });
@@ -89,8 +92,6 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-
-// ====================== RESEND OTP ======================
 export const resendOtp = async (req, res) => {
   try {
     const { email } = req.body;
@@ -120,7 +121,6 @@ export const resendOtp = async (req, res) => {
 };
 
 
-// ====================== LOGIN ======================
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -128,7 +128,6 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Check verification
     if (!user.isVerified)
       return res.status(401).json({ message: "Please verify your email first" });
 

@@ -11,7 +11,7 @@ dotenv.config();
 connectDB();  
 
 const app = express();
-const PORT = GLOBALS.PORT ?? 3000;
+const PORT = GLOBALS.PORT ?? process.env.PORT ?? 3000;
 
 app.use(cors({
   origin: "*",      
@@ -24,10 +24,11 @@ app.use(express.json());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/booking", bookingRoutes);
+app.use("/uploads", express.static("uploads"));
 
 
 
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on port ${process.env.PORT}`)
+app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}`)
 );

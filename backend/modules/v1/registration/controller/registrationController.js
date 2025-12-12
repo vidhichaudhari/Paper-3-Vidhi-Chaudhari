@@ -60,21 +60,34 @@ export const getMyRegistrations = async (req, res) => {
 };
 
 export const cancelRegistration = async (req, res) => {
-  const registration = await Registration.findById(req.params.id);
-  if (!registration) return res.status(404).json({ message: "Not found" });
+  try {
+    const registration = await Registration.findById(req.params.id);
 
-  if (registration.status === "cancelled")
-    return res.status(400).json({ message: "Already cancelled" });
+    if (!registration) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
 
-  registration.status = "cancelled";
-  await registration.save();
+    if (registration.status === "cancelled") {
+      return res.status(400).json({ message: "Already cancelled" });
+    }
 
-  await Event.findByIdAndUpdate(registration.eventId, {
-    $inc: { bookedSeats: -1 }
-  });
+    
+    registration.status = "cancelled";
+    await registration.save();
 
-  res.json({ success: true, message: "Registration cancelled" });
+    
+    await Event.findByIdAndUpdate(registration.event, {
+      $inc: { availableSeats: registration.tickets }
+    });
+
+    res.json({ success: true, message: "Registration cancelled successfully" });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
+
 
 export const updateAttendanceStatus = async (req, res) => {
   try {

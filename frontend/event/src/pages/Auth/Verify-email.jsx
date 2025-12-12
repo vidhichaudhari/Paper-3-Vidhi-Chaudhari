@@ -35,28 +35,31 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Verify Email</h2>
-      <p>OTP sent to <strong>{state?.email}</strong></p>
+  <div className="auth-container">
+  <div className="auth-form-box">
+    <h2>Verify Email</h2>
+    <p style={{textAlign: "center", marginBottom: "15px"}}>
+      OTP sent to <strong>{state?.email}</strong>
+    </p>
 
-      <form onSubmit={handleVerify} className="auth-form">
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          required
-        />
+    <form onSubmit={handleVerify}>
+      <label className="auth-label">Enter OTP</label>
+      <input
+        type="text"
+        className="auth-input"
+        placeholder="Enter OTP"
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+        required
+      />
 
-        <button type="submit" className="btn">
-          Verify OTP
-        </button>
-      </form>
+      <button type="submit" className="btn">Verify OTP</button>
+    </form>
 
-      <button onClick={handleResend} className="btn-secondary">
-        Resend OTP
-      </button>
-    </div>
+    <button onClick={handleResend} className="btn-secondary">Resend OTP</button>
+  </div>
+</div>
+
   );
 };
 

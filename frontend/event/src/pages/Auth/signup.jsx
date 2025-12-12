@@ -31,49 +31,61 @@ const Signup = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Signup</h2>
+   <div className="auth-container">
+  <div className="auth-form-box">
+    <h2>Create Account</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Enter Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
+    <form onSubmit={handleSubmit}>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+      <label className="auth-label">Full Name</label>
+      <input
+        type="text"
+        name="name"
+        className="auth-input"
+        placeholder="Enter your name"
+        value={form.name}
+        onChange={handleChange}
+        required
+      />
 
-        <input
-          type="number"
-          name="mobile"
-          placeholder="Enter Mobile"
-          value={form.mobile}
-          onChange={handleChange}
-          required
-        />
+      <label className="auth-label">Email Address</label>
+      <input
+        type="email"
+        name="email"
+        className="auth-input"
+        placeholder="Enter your email"
+        value={form.email}
+        onChange={handleChange}
+        required
+      />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+      <label className="auth-label">Mobile Number</label>
+      <input
+        type="number"
+        name="mobile"
+        className="auth-input"
+        placeholder="Enter your mobile number"
+        value={form.mobile}
+        onChange={handleChange}
+        required
+      />
 
-        <button type="submit">Signup</button>
-      </form>
-    </div>
+      <label className="auth-label">Password</label>
+      <input
+        type="password"
+        name="password"
+        className="auth-input"
+        placeholder="Create a password"
+        value={form.password}
+        onChange={handleChange}
+        required
+      />
+
+      <button type="submit" className="btn">Sign Up</button>
+    </form>
+  </div>
+</div>
+
   );
 };
 
